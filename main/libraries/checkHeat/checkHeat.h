@@ -73,6 +73,15 @@ private:
     int EMG_CODE;
     int EMG_level_01;
     int EMG_level_02;
+
+    // Datas
+    int distance_display;
+    int body_temp_display;
+    int temp_display;
+    int humid_display;
+    int heart_display;
+
+
 public:
     void init(BleManager *Manager);
     checkHeat();
@@ -99,6 +108,15 @@ public:
     void heatAllcheck(StepDetection stepdetect);
     bool checkBuzzer();
     inline int getEmergencyCode(){return (EMG_CODE % 100);}
+    inline int getDistanceDis(){
+        if(manager != NULL)
+            return manager->getDistance();
+        else
+            return 0;
+    }
+    inline int getTempDis(){return temp_display;}
+    inline int getBodyTempDis(){return body_temp_display;}
+    inline int getHumidDis(){return humid_display;}
     int getEMGCODE_set01(int);
     int getEMGCODE_set02(int);
 };

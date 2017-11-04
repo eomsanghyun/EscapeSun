@@ -34,6 +34,11 @@ checkHeat::checkHeat()
 	Movement_Time.init();
 	checkHeat_Time.init();
 	EmergencyAlarmAlert = false;
+	distance_display = 0;
+    body_temp_display= 0;
+    temp_display= 0;
+    humid_display= 0;
+    heart_display = 0;
 }
 
 void checkHeat::init(BleManager *Manager){
@@ -359,16 +364,26 @@ void checkHeat::checkMedian(){
 		median[BODY].add(bodyTemp);
 		median[HUMI].add(humidity);
 	}
-
-	manager->setIntSensorValue(manager->TEMPERATURE, int(median[manager->TEMPERATURE].getAverage(median[manager->TEMPERATURE].getMedian())));
-	manager->setIntSensorValue(manager->BODYHEAT, int(median[manager->BODYHEAT].getAverage(median[manager->BODYHEAT].getMedian())));
-	manager->setIntSensorValue(manager->HEARTRATE, int(median[manager->HEARTRATE].getAverage(median[manager->HEARTRATE].getMedian())));
-	manager->setIntSensorValue(manager->HUMIDITY, int(median[manager->HUMIDITY].getAverage(median[manager->HUMIDITY].getMedian())));
 	
-	checkBodyTemp(median[BODY].getAverage(median[BODY].getMedian()));
+	temp_display = int(median[manager->TEMPERATURE].getAverage(median[manager->TEMPERATURE].getMedian()));
+	body_temp_display = int(median[manager->BODYHEAT].getAverage(median[manager->BODYHEAT].getMedian()));
+	heart_display = int(median[manager->HEARTRATE].getAverage(median[manager->HEARTRATE].getMedian()));
+	humid_display = int(median[manager->HUMIDITY].getAverage(median[manager->HUMIDITY].getMedian()));
+
+	manager->setIntSensorValue(manager->TEMPERATURE, temp_display);
+	manager->setIntSensorValue(manager->BODYHEAT, body_temp_display);
+	manager->setIntSensorValue(manager->HEARTRATE, heart_display);
+	manager->setIntSensorValue(manager->HUMIDITY, humid_display);
+		
+	/*checkBodyTemp(median[BODY].getAverage(median[BODY].getMedian()));
 	checkTemp(median[TEMP].getAverage(median[TEMP].getMedian()));
 	checkHeart(median[HEART].getAverage(median[HEART].getMedian()));
-	checkHumidity(median[HUMI].getAverage(median[HUMI].getMedian()));
+	checkHumidity(median[HUMI].getAverage(median[HUMI].getMedian()));*/
+
+	checkBodyTemp(body_temp_display);
+	checkTemp(temp_display);
+	checkHeart(heart_display);
+	checkHumidity(humid_display);
 
 	for(int i = 0; i < MEDIAN_SIZE; i++){
 		median[i].clear();
@@ -420,7 +435,7 @@ void checkHeat::allcheck(StepDetection stepdetect){
 
 
 bool checkHeat::heatCramps(){
-	if(Humidity_Score + Temperature_Score > 10){// 600
+	if(Humidity_Score + Temperature_Score > 60){// 600
 		return true;
 	}
 	return false;

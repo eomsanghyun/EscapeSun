@@ -6,7 +6,12 @@
 #include "TimeCheck.h"
 #include "StepDetection.h"
 #include <CurieBLE.h>
-
+#include "DisplayManager.h"
+/** Display **/
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define OLED_RESET 4
+Adafruit_SSD1306 display(OLED_RESET);
 /*Bluetooth Low Energy*/
 // Main Service UUID
 BLEService escSunService("19B10000-E8F2-537E-4F6C-D104768A1214"); 
@@ -28,7 +33,7 @@ BleManager blemanager;
 TimeCheck currentTime;
 StepDetection stepdetect;
 int buttonPin = 13;
-
+DisplayManager disManager;
 void setup(){
   // put your setup code here, to run once:
   pinMode(buttonPin, INPUT);
@@ -40,9 +45,10 @@ void setup(){
   stepdetect = StepDetection();
   stepdetect.init();
   currentTime.init();
-
+  disManager.init(&display);
   // For test
   checkheat.resetTestData();
+
 }
  
 
@@ -52,7 +58,12 @@ int tempDelay = 0;
 int tempHumidDelay = 0;
 void loop()
 {  
-  ModeHeatScan();
+  //ModeHeatScan();
+  UpdateDisplay();
+}
+
+void UpdateDisplay(){
+    disManager.update(checkheat.getDistanceDis(),checkheat.getTempDis(),checkheat.getBodyTempDis(),checkheat.getHumidDis(),checkheat.getEmergencyCode());
 }
 void ModeHeatScan(){
     blemanager.initInLoop(central,sensorData,distanceData,switch0,emergency,limit_distance,limit_heart_rate,limit_humidity,limit_temperature,limit_body_heat);
