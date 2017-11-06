@@ -58,7 +58,7 @@ int tempDelay = 0;
 int tempHumidDelay = 0;
 void loop()
 {  
-  //ModeHeatScan();
+  ModeHeatScan();
   UpdateDisplay();
 }
 
@@ -80,8 +80,8 @@ void ModeHeatScan(){
     // if 200ms have passed, check the heart rate measurement:
     if (currentMillis - previousMillis >= 200) {previousMillis = currentMillis;}
     if(tempHumidDelay > 1000){
-       //checkheat.allcheck(stepdetect);// --> Original MODE
-       checkheat.checkTestData(stepdetect);// --> Test MODE
+       checkheat.allcheck(stepdetect);// --> Original MODE
+       //checkheat.checkTestData(stepdetect);// --> Test MODE
        tempHumidDelay = 0;
     }
     delay(delayMsec);

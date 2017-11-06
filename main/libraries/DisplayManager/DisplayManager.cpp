@@ -12,22 +12,36 @@ void DisplayManager::init(Adafruit_SSD1306* p_display){
     // Show image buffer on the display hardware.
     // Since the buffer is intialized with an Adafruit splashscreen
     // internally, this will display the splashscreen.
-    display->display();
-    delay(500);
+    //display->display();
+    display->clearDisplay();
+    display->setTextSize(1);
+  	display->setTextColor(WHITE);
+  	display->setCursor(15,16);
+  	display->println("Embedded SW 2017");
+  	display->display();
+    delay(2000);
+
+    display->clearDisplay();
+    display->setTextSize(2);
+  	display->setTextColor(WHITE);
+  	display->setCursor(10,8);
+  	display->println("Curie-i9");
+  	display->display();
+    delay(2000);
 
     // Clear the buffer.
     display->clearDisplay();
 
     // draw a single pixel
-    display->drawPixel(10, 10, WHITE);
+    //display->drawPixel(10, 10, WHITE);
     // Show the display buffer on the hardware.
     // NOTE: You _must_ call display after making any drawing commands
     // to make them visible on the display hardware!
-    display->display();
-    delay(500);
-    display->clearDisplay();
+    // display->display();
+    //delay(500);
+    //display->clearDisplay();
     display_type = 0;
-    Is_Emergency = false;
+    IsEmergency = false;
 }
 
 int getStartPoint(int val,int unit){
