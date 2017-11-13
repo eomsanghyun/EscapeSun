@@ -45,7 +45,7 @@ void setup(){
   stepdetect = StepDetection();
   stepdetect.init();
   currentTime.init();
-  disManager.init(&display);
+  //disManager.init(&display);
   // For test
   checkheat.resetTestData();
 
@@ -59,7 +59,7 @@ int tempHumidDelay = 0;
 void loop()
 {  
   ModeHeatScan();
-  UpdateDisplay();
+  //UpdateDisplay();
 }
 
 void UpdateDisplay(){
