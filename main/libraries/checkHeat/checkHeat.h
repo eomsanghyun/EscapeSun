@@ -84,6 +84,7 @@ private:
 
 public:
     void init(BleManager *Manager);
+    void reset();
     checkHeat();
     void sendCall(int zeroMotion);
     void checkBodyTemp(float);

@@ -12,6 +12,10 @@
 
 checkHeat::checkHeat()
 {
+	reset();
+}
+
+void checkHeat::reset(){
 	currentMillis = millis();
 	previousMillis = currentMillis-30000;
 	boo = 0;
@@ -28,17 +32,39 @@ checkHeat::checkHeat()
 	EMG_level_02 = 0;
 	buzzer = Bboobboo();
 	Temperature_Time.init();
+	Temperature_Time.resetTime();
 	BodyHeat_Time.init();
+	BodyHeat_Time.resetTime();
 	HeartRate_Time.init();
+	HeartRate_Time.resetTime();
 	Humidity_Time.init();
+	Humidity_Time.resetTime();
 	Movement_Time.init();
+	Movement_Time.resetTime();
 	checkHeat_Time.init();
+	checkHeat_Time.resetTime();
 	EmergencyAlarmAlert = false;
 	distance_display = 0;
     body_temp_display= 0;
     temp_display= 0;
     humid_display= 0;
     heart_display = 0;
+    for(int i = 0 ; i < TEMPERATURE_STACK_SIZE; i++)Temperature_Score_Stack[i]=0;
+    for(int i = 0 ; i < BODY_HEAT_STACK_SIZE; i++)BodyHeat_Score_Stack[i]=0;
+    for(int i = 0 ; i < HEART_RATE_STACK_SIZE; i++)HeartRate_Score_Stack[i]=0;
+    for(int i = 0 ; i < HUMIDITY_STACK_SIZE; i++)Humidity_Score_Stack[i]=0;
+    Temperature_Score = 0;
+    BodyHeat_Score = 0;
+    HeartRate_Score = 0;
+    Humidity_Score = 0;
+    Movement_Score = 0;
+    resetTestData();
+    test_temperature = 0;
+    test_heart_rate = 0;
+    test_body_heat = 0;
+    test_humidity = 0;
+
+    
 }
 
 void checkHeat::init(BleManager *Manager){
@@ -478,9 +504,14 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
         if(buttonState == LOW){  
             deBoo();
             Serial.println("<긴급 구호 버저가 종료되었습니다>");
+        	reset();
+        	EmergencyAlarmAlert = false;
+        }else{
+        	buzzer.turnOn();
+	        delay(300); 
+	        deBoo();
+	        delay(300);
         }
-        Serial.println("<기기를 종료 해 주세요. 버저를 끄려면 버튼을 눌러주세요>");
-        delay(500); 
 	} 
 
 
@@ -555,7 +586,15 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
 					Serial.print("식별 코드 : ");
     				Serial.println(getEmergencyCode());
     				buzzer.turnOn();
-					checkBuzzer();
+					if(checkBuzzer()){
+						manager->setEmergency(0);
+						manager->setDistance(0);	
+						manager->setIntSensorValue(0,0);
+						manager->setIntSensorValue(1,0);
+						manager->setIntSensorValue(2,0);
+						manager->setIntSensorValue(3,0);
+						reset();
+					}
 				}
 			}
 		}else{
@@ -570,25 +609,28 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
 
 }
 bool checkHeat::checkBuzzer(){
-	bool flag = false;
 	long currentMillis = millis();
 	long laterMillis;
 	int buttonState = digitalRead(13);
 	while(1){
     	laterMillis = millis();
-    	if(laterMillis-currentMillis > 10000){// 30s
-			Serial.println("time 10 over");
-			if(!flag){
-				// silent.. Buzzer On! Emergency advice CODE 3x
-				manager->setEmergency(getEMGCODE_set02(3));
-				Serial.println("+ 조언 : 버저 버튼이 30초간 눌러지지 않아 긴급 구조 문자가 발송되었습니다. 지금 몸에 이상이 있으시다면 꼭 쉬어야 합니다. ");
-				manager->setEmergency(getEmergencyCode());
-				Serial.print("+ 식별 코드 : ");
-				Serial.println(getEmergencyCode());
-				flag = true;
-				buzzer.turnOn();
-				// EmergencyAlarmAlert = true;
-			}
+    	if(laterMillis-currentMillis > 10000){// 10s
+			// silent.. Buzzer On! Emergency advice CODE 3x
+			manager->setEmergency(getEMGCODE_set02(3));
+			Serial.println("+ 조언 : 버저 버튼이 30초간 눌러지지 않아 긴급 구조 문자가 발송되었습니다. 지금 몸에 이상이 있으시다면 꼭 쉬어야 합니다. ");
+			manager->setEmergency(getEmergencyCode());
+			Serial.print("+ 식별 코드 : ");
+			Serial.println(getEmergencyCode());
+			
+			buzzer.turnOn();
+			EmergencyAlarmAlert = true;
+			return false;
+			/*
+			여기서 리턴을 해야 메인 루프로 돌아가서 블루투스로 긴급 신호가 전송 된다. 따라서 해당 루프에서 벗어나야함.
+			*/
+			
+			/*
+			그런 이유로 이 코드는 의미가 없음
 			buttonState = digitalRead(13);
 	        if(buttonState == LOW){  
 	            deBoo();
@@ -597,7 +639,7 @@ bool checkHeat::checkBuzzer(){
 			delay(300);
 			deBoo();
 			delay(300);
-			buzzer.turnOn();
+			buzzer.turnOn();*/
     	}
     	else{
 	    	buttonState = digitalRead(13);
@@ -605,6 +647,7 @@ bool checkHeat::checkBuzzer(){
 	            deBoo();
 	            return true;
 	        }
+	        buzzer.turnOn();
 	    	delay(300);
 			deBoo();
 			delay(300);

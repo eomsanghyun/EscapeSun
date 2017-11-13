@@ -144,6 +144,8 @@ void BleManager::initInLoop(
 
   if(IsEmergencyChanged){
     IsEmergencyChanged = false;
+    Serial.print("FINAL EMERGENCY CODE :");
+    Serial.println(emergency_val);
     emergency.setValue(emergency_val);
     //emergency_val = 0;
   }
