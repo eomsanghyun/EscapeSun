@@ -522,7 +522,7 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
 		// 움직임 : 있음/없음
 		int distance_val = manager->getDistance();
 		Serial.print("이동거리 : ");
-		Serial.print(distance_val);
+		Serial.print(distance_val*(0.8));
 		Serial.println(" (M)");
 		// 누적점수 : 누적점수총합
 		int total_score = Temperature_Score + BodyHeat_Score + Humidity_Score;
