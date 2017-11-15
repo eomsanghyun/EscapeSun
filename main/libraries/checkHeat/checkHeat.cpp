@@ -63,7 +63,7 @@ void checkHeat::reset(){
     test_heart_rate = 0;
     test_body_heat = 0;
     test_humidity = 0;
-
+    checkBuzzerFlag = false;
     
 }
 
@@ -586,7 +586,9 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
 					Serial.print("식별 코드 : ");
     				Serial.println(getEmergencyCode());
     				buzzer.turnOn();
-					if(checkBuzzer()){
+    				
+					if(checkBuzzerFlag && checkBuzzer()){
+						checkBuzzerFlag = false;
 						manager->setEmergency(0);
 						manager->setDistance(0);	
 						manager->setIntSensorValue(0,0);
@@ -594,6 +596,8 @@ void checkHeat::heatAllcheck(StepDetection stepdetect){
 						manager->setIntSensorValue(2,0);
 						manager->setIntSensorValue(3,0);
 						reset();
+					}else if(!checkBuzzerFlag){
+						checkBuzzerFlag = true;
 					}
 				}
 			}

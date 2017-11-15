@@ -31,6 +31,7 @@ private:
     int temp;
     int heart;
 	int count;
+    bool checkBuzzerFlag;
     Bboobboo buzzer;
     InfraredTemperature infraredTemp;
     temp_func mTemp;
